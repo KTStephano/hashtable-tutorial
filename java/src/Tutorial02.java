@@ -1,26 +1,14 @@
 /**
- * A hash table provides a way to associate unique keys
- * to values. It is an extension of the concept of an array -
- * an array maps ints to values, i.e. array[1] = new Object().
- * Instead of forcing you to use ints for keys, a hash table
- * allows you to use any type that can be hashed.
- *
- * For example, you might have hashtable["hello"] = new Object().
- * To do this we have to use the concept of hashing. A hash function,
- * for our purposes, takes an object and converts it into an integer.
- * Since all Java objects have a built in 'hashCode()' function, we can
- * do something like 'int hash = new Object().hashCode();'. We will make
- * extensive use of this method throughout the tutorial.
- *
- * In order to allow the user to use any type of Object-derived key in
- * our hash table, we need to make our class generic. To do this we
- * will introduce generic types K, V. It will allow our class to be
- * created as in `Tutorial01<Integer, String> table = new Tutorial01<>();`
+ * In this tutorial we are going to add a way to actually
+ * store the key-value pairs internally. The way we will accomplish
+ * this is by adding two things: first, an internal class called
+ * _Entry which stores a single Key and Value. Second we will add
+ * an array of _Entry objects.
  *
  * @param <K> key type - i.e. Integer
  * @param <V> value type - i.e. String
  */
-public class Tutorial01<K, V> {
+public class Tutorial02<K, V> {
     /**
      * Our hash table needs to have a minimum capacity, so
      * for our case we will choose a power of 2. If the user
@@ -28,6 +16,34 @@ public class Tutorial01<K, V> {
      * request and use this instead.
      */
     private static final int _MINIMUM_CAPACITY = 16;
+
+    /**
+     * An entry represents a mapping of a single key
+     * to a single value. This will form the backbone of our
+     * hash table and will be how we store all of the things
+     * the user puts into it.
+     */
+    private class _Entry<K, V> {
+        K key;
+        V value;
+        /* We store the hash code so that we can directly
+         * reference it if needed rather than having to
+         * re-compute it via key.hashCode()
+         */
+        final int hashCode;
+
+        _Entry(K key, V value, int hashCode) {
+            this.key = key;
+            this.value = value;
+            this.hashCode = hashCode;
+        }
+    }
+
+    /**
+     * Now we also need to add a list of entries so we
+     * can store stuff.
+     */
+    private _Entry[] _table;
 
     /**
      * Size keeps track of how many key-value pairs currently
@@ -50,7 +66,7 @@ public class Tutorial01<K, V> {
     /**
      * Takes no arguments and sets the capacity to be the minimum.
      */
-    public Tutorial01() {
+    public Tutorial02() {
         this(_MINIMUM_CAPACITY);
     }
 
@@ -58,10 +74,13 @@ public class Tutorial01<K, V> {
      * Allows the user to set the capacity they want the table
      * to start off with, so long as it's not smaller than the minimum.
      */
-    public Tutorial01(int capacity) {
+    public Tutorial02(int capacity) {
         // First make sure that the user did not request
         // a smaller capacity than the default
         _capacity = capacity < _MINIMUM_CAPACITY ? _MINIMUM_CAPACITY : capacity;
+
+        // Extend this constructor to create the internal table
+        _table = new _Entry[_capacity];
     }
 
     /**
@@ -83,11 +102,11 @@ public class Tutorial01<K, V> {
     // Some simple test code for this tutorial
     public static void main(String[] args) {
         // Use the default constructor
-        Tutorial01<Integer, String> table = new Tutorial01<>();
+        Tutorial02<Integer, String> table = new Tutorial02<>();
         System.out.println("size: " + table.size() + ", capacity: " + table.capacity());
 
         // Now use the second constructor
-        Tutorial01<Integer, Object> table2 = new Tutorial01<>(256);
+        Tutorial02<Integer, Object> table2 = new Tutorial02<>(256);
         System.out.println("size: " + table2.size() + ", capacity: " + table2.capacity());
     }
 }
