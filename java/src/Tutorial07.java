@@ -122,7 +122,7 @@ public class Tutorial07<K, V> implements Iterable<Map.Entry<K, V>> {
         private _Entry[] _tableRef = _table;
 
         /**
-         * Once we run our of links in the _currentEntry chain, we need
+         * Once we run out of links in the _currentEntry chain, we need
          * to move to the next index in the table. This keeps track of
          * our current index into the table.
          */
