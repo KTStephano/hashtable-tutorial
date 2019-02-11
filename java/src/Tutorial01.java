@@ -7,8 +7,9 @@
  *
  * For example, you might have hashtable["hello"] = new Object().
  * To do this we have to use the concept of hashing. A hash function,
- * for our purposes, takes an object and converts it into an integer. Once
- * we have the integer value, we can use it as a sort of index just like
+ * for our purposes, takes an object and converts it into an integer. So
+ * "hello" might become 99162322, for example, after being passed into a hash function.
+ * Once we have the integer value, we can use it as a sort of index just like
  * we would if we were implementing a regular array. Since all Java objects 
  * have a built in 'hashCode()' function, we can do something like 
  * 'int hash = new Object().hashCode();'. We will make extensive use of this 
