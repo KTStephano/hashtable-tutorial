@@ -7,10 +7,12 @@
  *
  * For example, you might have hashtable["hello"] = new Object().
  * To do this we have to use the concept of hashing. A hash function,
- * for our purposes, takes an object and converts it into an integer.
- * Since all Java objects have a built in 'hashCode()' function, we can
- * do something like 'int hash = new Object().hashCode();'. We will make
- * extensive use of this method throughout the tutorial.
+ * for our purposes, takes an object and converts it into an integer. Once
+ * we have the integer value, we can use it as a sort of index just like
+ * we would if we were implementing a regular array. Since all Java objects 
+ * have a built in 'hashCode()' function, we can do something like 
+ * 'int hash = new Object().hashCode();'. We will make extensive use of this 
+ * method throughout the tutorial.
  *
  * In order to allow the user to use any type of Object-derived key in
  * our hash table, we need to make our class generic. To do this we
