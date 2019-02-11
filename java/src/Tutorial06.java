@@ -237,7 +237,7 @@ public class Tutorial06<K, V> {
             previous = current;
             current = current.next;
         }
-        return false; // Key not exist
+        return false; // Key did not exist
     }
 
     /**
