@@ -118,7 +118,7 @@ public class Tutorial05<K, V> {
      * @param newCapacity should not be smaller than the existing capacity!
      */
     private void _resize(int newCapacity) {
-        if (newCapacity < _capacity) return;
+        if (newCapacity <= _capacity) return;
         // Create a new table with the larger capacity
         _Entry[] table = new _Entry[newCapacity];
         // Re-insert all the entries since it's very likely
