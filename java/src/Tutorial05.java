@@ -127,6 +127,8 @@ public class Tutorial05<K, V> {
         for (_Entry<K, V> e : _table) {
             _Entry<K, V> current = e;
             while (current != null) {
+                // Note - this is a new version of _put to replace supplement
+                // the old one! You can find it below this method.
                 _put(current.key, current.value, current.hashCode, table);
                 current = current.next;
             }
