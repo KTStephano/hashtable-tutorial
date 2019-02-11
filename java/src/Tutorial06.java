@@ -12,6 +12,8 @@
  *        Hint: you will need to change the internal _Entry class
  *        to implement the Map.Entry interface. You will also need to
  *        make use of the Iterable interface.
+ *     2) In this tutorial we add methods put() and get(). Can you figure
+ *        out their time complexity in terms of Big-O?
  *
  * @param <K> key type - i.e. Integer
  * @param <V> value type - i.e. String
