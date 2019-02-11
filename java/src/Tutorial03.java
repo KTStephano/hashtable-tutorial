@@ -6,11 +6,19 @@
  * that number to create an index into our _table array which
  * was added last tutorial.
  *
- * In tutorial 4 we will show how to handle collisions. A collision
- * is when two different keys end up placed into the same index
- * of a hash table. There are a lot of different ways we can avoid them,
- * but we will be using the simplest method. As an exercise: can you
- * extend tutorial 3 to include the ability to resolve collisions?
+ * One thing we will not be doing (yet) is dealing with collisions.
+ * If a user adds a unique key-value pair to the table and it ends up at
+ * the same index as a pair that already exists, we will just ignore
+ * the user's request. Real hash tables don't do this and can instead
+ * include both pairs regardless of the collision.
+ *
+ * Exercises:
+ *     1) In tutorial 4 we will show how to handle collisions. A collision
+ *        is when two different keys end up placed into the same index
+ *        of a hash table. There are a lot of different ways we can avoid them,
+ *        but we will be using the simplest method. As an exercise: can you
+ *        extend tutorial 3 to include the ability to resolve collisions? How
+ *        would you do it?
  *
  * @param <K> key type - i.e. Integer
  * @param <V> value type - i.e. String
