@@ -141,7 +141,7 @@ public class Tutorial05<K, V> {
     /**
      * Special private instance of put - it takes a table. This is useful
      * because when we perform a table resize, we actually need to re-add
-     * all of the entries into the new table!
+     * all of the entries into the new table.
      */
     private boolean _put(K key, V value, int hash, _Entry[] table) {
         // Get the capacity
