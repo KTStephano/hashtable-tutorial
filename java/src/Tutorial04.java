@@ -18,6 +18,10 @@
  *        us integers such that a lot of (or all of) our entries
  *        end up at the same index? How will the performance of the
  *        hash table be in this situation?
+ *     3) Can you experiment with different way to resolve hashing collisions?
+ *        In this tutorial we use linked list-style nodes to achieve this. There
+ *        are much better methods however, such as hopscotch, linear, and quadratic
+ *        probing which you can research online.
  *
  * @param <K> key type - i.e. Integer
  * @param <V> value type - i.e. String
