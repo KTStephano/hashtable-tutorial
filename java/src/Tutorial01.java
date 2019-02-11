@@ -2,8 +2,8 @@
  * A hash table provides a way to associate unique keys
  * to values. It is an extension of the concept of an array -
  * an array maps ints to values, i.e. array[1] = new Object().
- * Instead of forcing you to use ints for keys, a hash table
- * allows you to use any type that can be hashed.
+ * Instead of forcing you to use ints for keys, you can use any
+ * object type that is capable of being hashed (more on this below).
  *
  * For example, you might have hashtable["hello"] = new Object().
  * To do this we have to use the concept of hashing. A hash function,
