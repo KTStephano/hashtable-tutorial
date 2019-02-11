@@ -3,7 +3,7 @@
 A tutorial set using C++ is under works and will be up soon.
 
 ## How to use this tutorial
-Inside of java/src you will find 7 class files, named "Tutorial0#.java" where # is the tutorial number. In order to follow along, I recommend you start at number 1 and move from there.
+Inside of java/src you will find 7 class files each named "Tutorial0#.java" where # is the tutorial number. In order to follow along, I recommend you start at number 1 and move from there.
 
 Each tutorial contains complete source code for everything done so far, as well as some test code inside of main(). To get the full amount out of each one, you should read all the comments (there are a LOT of comments!) and try to implement the code starting from a blank slate, making changes along the way.
 
