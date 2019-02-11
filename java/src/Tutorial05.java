@@ -1,7 +1,7 @@
 /**
  * In this tutorial we will introduce the ability for
  * our hash map to dynamically grow whenever it starts
- * to get to full. To do this, we will introduce the concept
+ * to get too full. To do this, we will introduce the concept
  * of --load balancing--. We won't actually let our hash table
  * completely fill up before we resize. Instead, we will let
  * it fill up until it's 75% full, and then we will resize. The
