@@ -194,7 +194,9 @@ public class Tutorial05<K, V> {
     public boolean put(K key, V value) {
         // First check if we need to resize - would it be
         // more efficient if we cached adjustedCapacity by making it
-        // a member variable?
+        // a member variable? Remember that we are going to
+        // resize the table every time we reach 75% capacity, so
+        // this is why we do _capacity * _LOAD_FACTOR.
         int adjustedCapacity = (int)(_capacity * _LOAD_FACTOR);
         if (_size >= adjustedCapacity) {
             // We will opt to double our capacity during
