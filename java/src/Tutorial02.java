@@ -6,7 +6,7 @@
  * an array of _Entry objects.
  *
  * Exercises:
- *     1) Tutorial 3 will add the ability to actually add elements
+ *     1) Tutorial 3 will add the ability to let the user actually add elements
  *        to the hash table. If you were to try to do this without
  *        looking at the solution, what would you do? Hint: You will
  *        need to make use of Java's hashCode() function as well
