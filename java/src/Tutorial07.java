@@ -35,6 +35,10 @@ import java.util.Map;
  *         only the keys without their values?
  *      4) Can you create a HashSet type of class that uses a hash map behind
  *         the scenes?
+ *      5) The real Java HashMap will often throw a ConcurrentModificationException
+ *         if you add/remove elements to/from the map while you are for-each
+ *         iterating over it. Can you think of a way to implement this consistency
+ *         check?
  *
  * @param <K> key type - i.e. Integer
  * @param <V> value type - i.e. String
