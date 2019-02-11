@@ -19,6 +19,8 @@
  *        but we will be using the simplest method. As an exercise: can you
  *        extend tutorial 3 to include the ability to resolve collisions? How
  *        would you do it?
+ *     2) In this tutorial we add put() and containsKey(). What is the
+ *        time complexity of these two methods in terms of Big-O?
  *
  * @param <K> key type - i.e. Integer
  * @param <V> value type - i.e. String
