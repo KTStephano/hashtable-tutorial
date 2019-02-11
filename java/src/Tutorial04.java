@@ -14,7 +14,7 @@
  *        can dynamically grow as more and more entries are added. As
  *        an exercise: can you extent Tutorial 4 to be able to grow
  *        the table dynamically?
- *     2) What do you think will happen if our hash code gives
+ *     2) What do you think will happen if our hash function gives
  *        us integers such that a lot of (or all of) our entries
  *        end up at the same index? How will the performance of the
  *        hash table be in this situation?
