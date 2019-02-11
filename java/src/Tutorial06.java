@@ -1,27 +1,20 @@
 /**
- * In this tutorial we will introduce the ability for
- * our hash map to dynamically grow whenever it starts
- * to get to full. To do this, we will introduce the concept
- * of --load balancing--. We won't actually let our hash table
- * completely fill up before we resize. Instead, we will let
- * it fill up until it's 75% full, and then we will resize. The
- * reason for this is that hash table performance degrades the closer
- * it gets to being full. Allowing it to never exceed 75% capacity
- * mitigates this performance risk.
+ * In this tutorial we are going to introduce the ability
+ * to remove elements as well as retrieve elements from the
+ * hash table. This won't be much of a leap since it uses
+ * concepts that were shown in previous tutorials.
  *
- * I will leave a couple of exercises here. First, what happens
- * if you modify the load factor, or even remove it? Does it seem
- * to matter? How does it perform when you add a huge number of
- * elements (hundreds of thousands or millions)?
- *
- * Second, tutorial 6 will introduce the ability to remove a
- * key-value pair and to retrieve the value from the table given
- * a key. Can you modify this tutorial to include those features?
+ * In Tutorial 07, the final tutorial, we will be adding
+ * the ability to iterate over the hash table using a
+ * range-for loop just like a normal Java HashMap.
+ * Can you modify this tutorial to add that feature?
+ * Hint: you will need to change the internal _Entry class
+ * to implement the Map.Entry interface.
  *
  * @param <K> key type - i.e. Integer
  * @param <V> value type - i.e. String
  */
-public class Tutorial05<K, V> {
+public class Tutorial06<K, V> {
     /**
      * Our hash table needs to have a minimum capacity, so
      * for our case we will choose a power of 2. If the user
@@ -90,7 +83,7 @@ public class Tutorial05<K, V> {
     /**
      * Takes no arguments and sets the capacity to be the minimum.
      */
-    public Tutorial05() {
+    public Tutorial06() {
         this(_MINIMUM_CAPACITY);
     }
 
@@ -98,7 +91,7 @@ public class Tutorial05<K, V> {
      * Allows the user to set the capacity they want the table
      * to start off with, so long as it's not smaller than the minimum.
      */
-    public Tutorial05(int capacity) {
+    public Tutorial06(int capacity) {
         // First make sure that the user did not request
         // a smaller capacity than the default
         _capacity = capacity < _MINIMUM_CAPACITY ? _MINIMUM_CAPACITY : capacity;
@@ -208,19 +201,54 @@ public class Tutorial05<K, V> {
      * @return true if the given key exists in our table and false if not.
      */
     public boolean containsKey(K key) {
-        // Perform the same process as with put() to get the hash code
-        // and then convert it to an index, except this time we're not
-        // actually modifying the table
+        // Now that we have get(), this method becomes much simpler
+        return get(key) != null;
+    }
+
+    /**
+     * Removes a key-value pair from the table, if it exists.
+     * @param key key to remove (removes its value as well)
+     * @return true if it was removed and false if it didn't exist
+     */
+    public boolean remove(K key) {
         int hash = key.hashCode();
         int index = hash % _capacity;
 
+        _Entry<K, V> current = _table[index];
+        _Entry<K, V> previous = null;
+        // Walk the list and see if the key exists - remove it
+        // if it does, but be careful not to break the existing chain!
+        while (current != null) {
+            if (current.key.equals(key)) {
+                // Unlink this node from the linked list
+                if (previous == null) {
+                    _table[index] = current.next;
+                } else {
+                    previous.next = current.next;
+                }
+                // Make sure we change the size
+                --_size;
+                return true;
+            }
+            previous = current;
+            current = current.next;
+        }
+        return false; // Key not exist
+    }
+
+    /**
+     * @param key key whose value you want to retrieve
+     * @return a value if its key-value pair existed, but null otherwise
+     */
+    public V get(K key) {
+        int hash = key.hashCode();
+        int index = hash % _capacity;
         _Entry<K, V> e = _table[index];
-        // Walk the list at this index and see if the key exists
         while (e != null) {
-            if (e.key.equals(key)) return true;
+            if (e.key.equals(key)) return e.value;
             e = e.next;
         }
-        return false;
+        return null;
     }
 
     /**
@@ -242,7 +270,7 @@ public class Tutorial05<K, V> {
     // Some simple test code for this tutorial
     public static void main(String[] args) {
         // Use the default constructor
-        Tutorial05<Integer, String> table = new Tutorial05<>();
+        Tutorial06<Integer, String> table = new Tutorial06<>();
         System.out.println("size: " + table.size() + ", capacity: " + table.capacity());
 
         // Add a whole bunch of objects
@@ -254,8 +282,19 @@ public class Tutorial05<K, V> {
         System.out.println("size after add: " + table.size() +
                 ", capacity after add: " + table.capacity());
 
+        // Now retrieve the objects and remove them at the same time
+        for (int i = 0; i < 512; ++i) {
+            String result = table.get(i);
+            assert(result != null && result.equals(Integer.toString(i)));
+            // Now remove it
+            table.remove(i);
+            assert( !table.containsKey(i) );
+        }
+        System.out.println("size after add: " + table.size() +
+                ", capacity after add: " + table.capacity());
+
         // Now use the second constructor
-        Tutorial05<Integer, Object> table2 = new Tutorial05<>(256);
+        Tutorial06<Integer, Object> table2 = new Tutorial06<>(256);
         System.out.println("size: " + table2.size() + ", capacity: " + table2.capacity());
     }
 }
