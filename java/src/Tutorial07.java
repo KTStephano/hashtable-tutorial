@@ -131,7 +131,7 @@ public class Tutorial07<K, V> implements Iterable<Map.Entry<K, V>> {
         @Override
         public boolean hasNext() {
             // If we have another link in the current chain, immediately
-            // return null
+            // return true
             if (_currentEntry != null && _currentEntry.next != null) return true;
             int capacity = _tableRef.length;
             // Otherwise, move onto the next entries in the table and see
