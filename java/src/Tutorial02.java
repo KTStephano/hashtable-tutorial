@@ -5,6 +5,13 @@
  * _Entry which stores a single Key and Value. Second we will add
  * an array of _Entry objects.
  *
+ * Exercises:
+ *     1) Tutorial 3 will add the ability to actually add elements
+ *        to the hash table. If you were to try to do this without
+ *        looking at the solution, what would you do? Hint: You will
+ *        need to make use of Java's hashCode() function as well
+ *        as the modulus (%) operator.
+ *
  * @param <K> key type - i.e. Integer
  * @param <V> value type - i.e. String
  */
@@ -23,7 +30,7 @@ public class Tutorial02<K, V> {
      * hash table and will be how we store all of the things
      * the user puts into it.
      */
-    private class _Entry<K, V> {
+    private static class _Entry<K, V> {
         K key;
         V value;
         /* We store the hash code so that we can directly

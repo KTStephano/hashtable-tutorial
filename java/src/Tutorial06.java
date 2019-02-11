@@ -4,12 +4,14 @@
  * hash table. This won't be much of a leap since it uses
  * concepts that were shown in previous tutorials.
  *
- * In Tutorial 07, the final tutorial, we will be adding
- * the ability to iterate over the hash table using a
- * range-for loop just like a normal Java HashMap.
- * Can you modify this tutorial to add that feature?
- * Hint: you will need to change the internal _Entry class
- * to implement the Map.Entry interface.
+ * Exercises:
+ *     1) In Tutorial 07, the final tutorial, we will be adding
+ *        the ability to iterate over the hash table using a
+ *        range-for loop just like a normal Java HashMap.
+ *        Can you modify this tutorial to add that feature?
+ *        Hint: you will need to change the internal _Entry class
+ *        to implement the Map.Entry interface. You will also need to
+ *        make use of the Iterable interface.
  *
  * @param <K> key type - i.e. Integer
  * @param <V> value type - i.e. String

@@ -30,7 +30,7 @@ public class Tutorial03<K, V> {
      * hash table and will be how we store all of the things
      * the user puts into it.
      */
-    private class _Entry<K, V> {
+    private static class _Entry<K, V> {
         K key;
         V value;
         /* We store the hash code so that we can directly
@@ -109,7 +109,7 @@ public class Tutorial03<K, V> {
          */
         int index = hash % _capacity;
 
-        _Entry e = _table[index];
+        _Entry<K, V> e = _table[index];
         /*
          * If the current entry at that index in the table is null, go ahead
          * and add a new entry in that spot. What happens if there was an
@@ -134,7 +134,7 @@ public class Tutorial03<K, V> {
         int hash = key.hashCode();
         int index = hash % _capacity;
 
-        _Entry e = _table[index];
+        _Entry<K, V> e = _table[index];
         return e != null && e.key.equals(key);
     }
 

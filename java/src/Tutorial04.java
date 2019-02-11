@@ -9,10 +9,11 @@
  * the same index, we will simply --place multiple pairs at
  * the same index-- using their linked list property.
  *
- * In the next tutorial we will extend our table so that it
- * can dynamically grow as more and more entries are added. As
- * an exercise: can you extent Tutorial 4 to be able to grow
- * the table dynamically?
+ * Exercises:
+ *     1) In Tutorial 5 we will extend our table so that it
+ *        can dynamically grow as more and more entries are added. As
+ *        an exercise: can you extent Tutorial 4 to be able to grow
+ *        the table dynamically?
  *
  * @param <K> key type - i.e. Integer
  * @param <V> value type - i.e. String
@@ -32,7 +33,7 @@ public class Tutorial04<K, V> {
      * hash table and will be how we store all of the things
      * the user puts into it.
      */
-    private class _Entry<K, V> {
+    private static class _Entry<K, V> {
         K key;
         V value;
         /* We store the hash code so that we can directly
@@ -44,7 +45,7 @@ public class Tutorial04<K, V> {
          * Each entry can now act as a linked list so that we
          * can stack multiple entries at the same index!
          */
-        _Entry next = null;
+        _Entry<K, V> next = null;
 
         _Entry(K key, V value, int hashCode) {
             this.key = key;
@@ -116,10 +117,10 @@ public class Tutorial04<K, V> {
          */
         int index = hash % _capacity;
 
-        _Entry e = _table[index];
+        _Entry<K, V> e = _table[index];
         // Collision detection: Is there already an entry at this index?
         if (e != null) {
-            _Entry current = e;
+            _Entry<K, V> current = e;
             // We first need to walk the linked list to make sure
             // the key we're adding doesn't exist - remember, a hash table
             // requires all keys to be unique!
@@ -135,7 +136,7 @@ public class Tutorial04<K, V> {
 
             // If we got here then the key-value pair did not exist, so
             // add it!
-            _Entry newEntry = new _Entry<>(key, value, hash);
+            _Entry<K, V> newEntry = new _Entry<>(key, value, hash);
             newEntry.next = e.next; // Make sure we don't break the existing chain
             e.next = newEntry;
         } else {
@@ -158,7 +159,7 @@ public class Tutorial04<K, V> {
         int hash = key.hashCode();
         int index = hash % _capacity;
 
-        _Entry e = _table[index];
+        _Entry<K, V> e = _table[index];
         // Walk the list at this index and see if the key exists
         while (e != null) {
             if (e.key.equals(key)) return true;

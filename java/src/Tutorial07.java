@@ -1,31 +1,45 @@
+import java.util.Iterator;
+import java.util.Map;
+
 /**
- * In this tutorial we will introduce the ability for
- * our hash map to dynamically grow whenever it starts
- * to get to full. To do this, we will introduce the concept
- * of --load balancing--. We won't actually let our hash table
- * completely fill up before we resize. Instead, we will let
- * it fill up until it's 75% full, and then we will resize. The
- * reason for this is that hash table performance degrades the closer
- * it gets to being full. Allowing it to never exceed 75% capacity
- * mitigates this performance risk.
+ * Welcome to the final tutorial! Now we will make it so
+ * the user can iterate over the elements of our hash table
+ * using the range-for loop. For example, we might end up with
+ * something like this:
+ *      Tutorial07<Integer, String> table = new Tutorial07<>();
+ *      for (Map.Entry<Integer, String> e : table) {
+ *          ...
+ *      }
+ *
+ * To do this we need to do a few things. First, we are going to
+ * change our _Entry class so that it implements the Map.Entry
+ * interface.
+ *
+ * Next we will need to create a new internal class that
+ * we will call _Iterator. It will implement the Iterator class and
+ * keep track of which element inside the table that the user is
+ * currently looking at, and it will also be able to move to
+ * the next element.
+ *
+ * Also, pay attention to the Tutorial07 class: it now implements
+ * the Iterable interface, which is very important! The Iterable interface
+ * requires us to include a method called "iterator()" which automatically
+ * gets called when the user sets up a for-each loop using our class.
  *
  * Exercises:
- *     1) What happens if you modify the load factor, or even remove it?
- *        Does it seem to matter? How does it perform with your modified
- *        load factor when adding large numbers of elements (hundreds
- *        of thousands or millions)?
- *     2) Tutorial 6 will introduce the ability to remove a key-value
- *        pair and to retrieve the value from the table given a key.
- *        Can you modify this tutorial to include those features?
- *     3) Can you experiment with different way to resolve hashing collisions?
- *        In this tutorial we use linked list-style nodes to achieve this. There
- *        are much better methods however, such as hopscotch, linear, and quadratic
- *        probing which you can research online.
+ *      1) Can you add a putAll function that takes a Collection of Map.Entry
+ *         objects and adds them all to the table?
+ *      2) Can you add a putIfAbsent that only modifies the table if the key
+ *         does not exist at all?
+ *      3) Can you add support for a .keySet() method which returns a set of
+ *         only the keys without their values?
+ *      4) Can you create a HashSet type of class that uses a hash map behind
+ *         the scenes?
  *
  * @param <K> key type - i.e. Integer
  * @param <V> value type - i.e. String
  */
-public class Tutorial05<K, V> {
+public class Tutorial07<K, V> implements Iterable<Map.Entry<K, V>> {
     /**
      * Our hash table needs to have a minimum capacity, so
      * for our case we will choose a power of 2. If the user
@@ -46,7 +60,7 @@ public class Tutorial05<K, V> {
      * hash table and will be how we store all of the things
      * the user puts into it.
      */
-    private static class _Entry<K, V> {
+    private static class _Entry<K, V> implements Map.Entry<K, V> {
         K key;
         V value;
         /* We store the hash code so that we can directly
@@ -65,6 +79,94 @@ public class Tutorial05<K, V> {
             this.value = value;
             this.hashCode = hashCode;
         }
+
+        @Override
+        public K getKey() {
+            return key;
+        }
+
+        @Override
+        public V getValue() {
+            return value;
+        }
+
+        @Override
+        public V setValue(V value) {
+            // Note: this returns the old value
+            V old = this.value;
+            this.value = value;
+            return old;
+        }
+    }
+
+    /**
+     * This class is what enables the user to iterate over the
+     * entries in our hash table. It keeps track of both the
+     * current _Entry object, as well as the location in the table.
+     * Whenever we need to move to the next element, this class has
+     * just enough internal information to make the move.
+     */
+    private class _Iterator implements Iterator<Map.Entry<K, V>> {
+        /**
+         * Current entry that we're on. This lets us keep track of
+         * where the user is inside of our map, and also allows us to
+         * move to the next entry inside of the chain.
+         */
+        private _Entry<K, V> _currentEntry = null;
+
+        /**
+         * Store a reference to the table so that it's impossible
+         * for it to be garbage collected while an instance of an iterator
+         * exists.
+         */
+        private _Entry[] _tableRef = _table;
+
+        /**
+         * Once we run our of links in the _currentEntry chain, we need
+         * to move to the next index in the table. This keeps track of
+         * our current index into the table.
+         */
+        private int _entryIndex = 0;
+
+        @Override
+        public boolean hasNext() {
+            // If we have another link in the current chain, immediately
+            // return null
+            if (_currentEntry != null && _currentEntry.next != null) return true;
+            int capacity = _tableRef.length;
+            // Otherwise, move onto the next entries in the table and see
+            // if any of them are non-null. If our _currentEntry is null,
+            // then we are going to start indexing into the table using whatever
+            // value is already present in _entryIndex. If not null, we need to
+            // start checking at the next set of entries (_entryIndex + 1)
+            int index = _currentEntry == null ? _entryIndex : _entryIndex + 1;
+            for (; index < capacity; ++index) {
+                _Entry<K, V> e = _tableRef[index];
+                if (e != null) return true;
+            }
+            return false; // We're on the final entry
+        }
+
+        @Override
+        public Map.Entry<K, V> next() {
+            _Entry<K, V> e = _currentEntry != null ? _currentEntry.next : null;
+            // If e is null then we can't easily get the next entry, and instead
+            // have to start looking through the table
+            if (e == null) {
+                int capacity = _tableRef.length;
+                // If _currentEntry is null then this is probably the first time
+                // that next() is being called, so we will just let _entryIndex stay
+                // its same value. Otherwise we will set it to _entryIndex + 1 to
+                // get the next list of entries.
+                _entryIndex = _currentEntry == null ? _entryIndex : _entryIndex + 1;
+                for (; _entryIndex < capacity; ++_entryIndex) {
+                    e = _tableRef[_entryIndex];
+                    if (e != null) break;
+                }
+            }
+            _currentEntry = e;
+            return _currentEntry;
+        }
     }
 
     /**
@@ -72,6 +174,14 @@ public class Tutorial05<K, V> {
      * can store stuff.
      */
     private _Entry[] _table;
+
+    /**
+     * Allows our class to have its elements iterated over.
+     */
+    @Override
+    public Iterator<Map.Entry<K, V>> iterator() {
+        return new _Iterator();
+    }
 
     /**
      * Size keeps track of how many key-value pairs currently
@@ -94,7 +204,7 @@ public class Tutorial05<K, V> {
     /**
      * Takes no arguments and sets the capacity to be the minimum.
      */
-    public Tutorial05() {
+    public Tutorial07() {
         this(_MINIMUM_CAPACITY);
     }
 
@@ -102,7 +212,7 @@ public class Tutorial05<K, V> {
      * Allows the user to set the capacity they want the table
      * to start off with, so long as it's not smaller than the minimum.
      */
-    public Tutorial05(int capacity) {
+    public Tutorial07(int capacity) {
         // First make sure that the user did not request
         // a smaller capacity than the default
         _capacity = capacity < _MINIMUM_CAPACITY ? _MINIMUM_CAPACITY : capacity;
@@ -212,19 +322,54 @@ public class Tutorial05<K, V> {
      * @return true if the given key exists in our table and false if not.
      */
     public boolean containsKey(K key) {
-        // Perform the same process as with put() to get the hash code
-        // and then convert it to an index, except this time we're not
-        // actually modifying the table
+        // Now that we have get(), this method becomes much simpler
+        return get(key) != null;
+    }
+
+    /**
+     * Removes a key-value pair from the table, if it exists.
+     * @param key key to remove (removes its value as well)
+     * @return true if it was removed and false if it didn't exist
+     */
+    public boolean remove(K key) {
         int hash = key.hashCode();
         int index = hash % _capacity;
 
+        _Entry<K, V> current = _table[index];
+        _Entry<K, V> previous = null;
+        // Walk the list and see if the key exists - remove it
+        // if it does, but be careful not to break the existing chain!
+        while (current != null) {
+            if (current.key.equals(key)) {
+                // Unlink this node from the linked list
+                if (previous == null) {
+                    _table[index] = current.next;
+                } else {
+                    previous.next = current.next;
+                }
+                // Make sure we change the size
+                --_size;
+                return true;
+            }
+            previous = current;
+            current = current.next;
+        }
+        return false; // Key not exist
+    }
+
+    /**
+     * @param key key whose value you want to retrieve
+     * @return a value if its key-value pair existed, but null otherwise
+     */
+    public V get(K key) {
+        int hash = key.hashCode();
+        int index = hash % _capacity;
         _Entry<K, V> e = _table[index];
-        // Walk the list at this index and see if the key exists
         while (e != null) {
-            if (e.key.equals(key)) return true;
+            if (e.key.equals(key)) return e.value;
             e = e.next;
         }
-        return false;
+        return null;
     }
 
     /**
@@ -246,7 +391,7 @@ public class Tutorial05<K, V> {
     // Some simple test code for this tutorial
     public static void main(String[] args) {
         // Use the default constructor
-        Tutorial05<Integer, String> table = new Tutorial05<>();
+        Tutorial07<Integer, String> table = new Tutorial07<>();
         System.out.println("size: " + table.size() + ", capacity: " + table.capacity());
 
         // Add a whole bunch of objects
@@ -258,8 +403,29 @@ public class Tutorial05<K, V> {
         System.out.println("size after add: " + table.size() +
                 ", capacity after add: " + table.capacity());
 
+        // Now retrieve the objects and remove them at the same time
+        for (int i = 0; i < 512; ++i) {
+            String result = table.get(i);
+            assert(result != null && result.equals(Integer.toString(i)));
+            // Now remove it
+            table.remove(i);
+            assert( !table.containsKey(i) );
+        }
+        System.out.println("size after add: " + table.size() +
+                ", capacity after add: " + table.capacity());
+
         // Now use the second constructor
-        Tutorial05<Integer, Object> table2 = new Tutorial05<>(256);
+        Tutorial07<Integer, Object> table2 = new Tutorial07<>(256);
         System.out.println("size: " + table2.size() + ", capacity: " + table2.capacity());
+
+        // Add a few entries and then iterate over them
+        for (int i = 0; i < 16; ++i) {
+            table2.put(i, Integer.toString(i));
+        }
+
+        for (Map.Entry<Integer, Object> e : table2) {
+            System.out.println(e.getKey() + ", " + e.getValue());
+        }
+        System.out.println(table2.containsKey(0));
     }
 }
