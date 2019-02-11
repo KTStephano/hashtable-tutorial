@@ -16,7 +16,7 @@ import java.util.Map;
  * interface.
  *
  * Next we will need to create a new internal class that
- * we will call _Iterator. It will implement the Iterator class and
+ * we will call _Iterator. It will implement the Iterator interface and
  * keep track of which element inside the table that the user is
  * currently looking at, and it will also be able to move to
  * the next element.
