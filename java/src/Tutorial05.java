@@ -3,7 +3,20 @@
  * our hash map to dynamically grow whenever it starts
  * to get to full. To do this, we will introduce the concept
  * of --load balancing--. We won't actually let our hash table
- * completely fill up before we resize.
+ * completely fill up before we resize. Instead, we will let
+ * it fill up until it's 75% full, and then we will resize. The
+ * reason for this is that hash table performance degrades the closer
+ * it gets to being full. Allowing it to never exceed 75% capacity
+ * mitigates this performance risk.
+ *
+ * I will leave a couple of exercises here. First, what happens
+ * if you modify the load factor, or even remove it? Does it seem
+ * to matter? How does it perform when you add a huge number of
+ * elements (hundreds of thousands or millions)?
+ *
+ * Second, tutorial 6 will introduce the ability to remove a
+ * key-value pair and to retrieve the value from the table given
+ * a key. Can you modify this tutorial to include those features?
  *
  * @param <K> key type - i.e. Integer
  * @param <V> value type - i.e. String
@@ -18,12 +31,18 @@ public class Tutorial05<K, V> {
     private static final int _MINIMUM_CAPACITY = 16;
 
     /**
+     * For performance reasons, we will always resize our table
+     * whenever it is 75% full.
+     */
+    private static final double _LOAD_FACTOR = 0.75;
+
+    /**
      * An entry represents a mapping of a single key
      * to a single value. This will form the backbone of our
      * hash table and will be how we store all of the things
      * the user puts into it.
      */
-    private class _Entry<K, V> {
+    private static class _Entry<K, V> {
         K key;
         V value;
         /* We store the hash code so that we can directly
@@ -35,7 +54,7 @@ public class Tutorial05<K, V> {
          * Each entry can now act as a linked list so that we
          * can stack multiple entries at the same index!
          */
-        _Entry next = null;
+        _Entry<K, V> next = null;
 
         _Entry(K key, V value, int hashCode) {
             this.key = key;
@@ -89,13 +108,42 @@ public class Tutorial05<K, V> {
     }
 
     /**
-     * Adds a new key-value pair to our hash table.
-     * @return true if it was added and false otherwise.
+     * Resizes the internal hash table given a new capacity. One extremely
+     * important thing to keep in mind is that since all indices are calculated
+     * in terms of the current table's capacity, when we resize we invalidate
+     * all existing key-value locations. Because of this, we unfortunately have
+     * to go back through and re-calculate all of their positions (in effect,
+     * re-add everything into the new table).
+     *
+     * @param newCapacity should not be smaller than the existing capacity!
      */
-    public boolean put(K key, V value) {
-        // First compute the hash code using Java's
-        // build-in hashCode() function
-        int hash = key.hashCode();
+    private void _resize(int newCapacity) {
+        if (newCapacity < _capacity) return;
+        // Create a new table with the larger capacity
+        _Entry[] table = new _Entry[newCapacity];
+        // Re-insert all the entries since it's very likely
+        // that their locations need to change since we increased
+        // the table size
+        for (_Entry<K, V> e : _table) {
+            _Entry<K, V> current = e;
+            while (current != null) {
+                _put(current.key, current.value, current.hashCode, table);
+                current = current.next;
+            }
+        }
+        // Overwrite the current table/capacity
+        _table = table;
+        _capacity = newCapacity;
+    }
+
+    /**
+     * Special private instance of put - it takes a table. This is useful
+     * because when we perform a table resize, we actually need to re-add
+     * all of the entries!
+     */
+    private boolean _put(K key, V value, int hash, _Entry[] table) {
+        // Get the capacity
+        int capacity = table.length;
 
         /*
          * Now we need to convert the hash code into an
@@ -105,12 +153,12 @@ public class Tutorial05<K, V> {
          * fix this, we use modulus (%) with _capacity to constrain
          * it to the range of indices we want.
          */
-        int index = hash % _capacity;
+        int index = hash % capacity;
 
-        _Entry e = _table[index];
+        _Entry<K, V> e = table[index];
         // Collision detection: Is there already an entry at this index?
         if (e != null) {
-            _Entry current = e;
+            _Entry<K, V> current = e;
             // We first need to walk the linked list to make sure
             // the key we're adding doesn't exist - remember, a hash table
             // requires all keys to be unique!
@@ -126,17 +174,34 @@ public class Tutorial05<K, V> {
 
             // If we got here then the key-value pair did not exist, so
             // add it!
-            _Entry newEntry = new _Entry<>(key, value, hash);
+            _Entry<K, V> newEntry = new _Entry<>(key, value, hash);
             newEntry.next = e.next; // Make sure we don't break the existing chain
             e.next = newEntry;
         } else {
             // That index has nothing there, so put a brand new entry
             // in its spot
-            _table[index] = new _Entry<>(key, value, hash);
+            table[index] = new _Entry<>(key, value, hash);
         }
-
-        ++_size;
         return true; // added
+    }
+
+    /**
+     * Adds a new key-value pair to our hash table.
+     * @return true if it was added and false otherwise.
+     */
+    public boolean put(K key, V value) {
+        // First check if we need to resize - would it be
+        // more efficient if we cached adjustedCapacity by making it
+        // a member variable?
+        int adjustedCapacity = (int)(_capacity * _LOAD_FACTOR);
+        if (_size >= adjustedCapacity) {
+            // We will opt to double our capacity during
+            // each resize
+            _resize(_capacity * 2);
+        }
+        boolean result = _put(key, value, key.hashCode(), _table);
+        if (result) ++_size;
+        return result;
     }
 
     /**
@@ -149,7 +214,7 @@ public class Tutorial05<K, V> {
         int hash = key.hashCode();
         int index = hash % _capacity;
 
-        _Entry e = _table[index];
+        _Entry<K, V> e = _table[index];
         // Walk the list at this index and see if the key exists
         while (e != null) {
             if (e.key.equals(key)) return true;
