@@ -1,6 +1,6 @@
 # hashtable-tutorial
 
-A tutorial set using C++ is under works and will be up soon.
+A tutorial set using C++ is under construction.
 
 ## How to use this tutorial
 Inside of java/src you will find 7 class files each named "Tutorial0#.java" where # is the tutorial number. In order to follow along, I recommend you start at number 1 and move from there.
